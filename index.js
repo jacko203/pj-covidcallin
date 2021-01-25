@@ -1,17 +1,27 @@
 const app = require('express')();
 const http = require('http').createServer(app);
-const io = require('socket.io')(http);
-
-const cubicleData = new Array();
-
-
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
+const io = require('socket.io')(http, {
+  cors: {
+    origin: "*",
+    methods: ["GET","POST"]
+  }
 });
+
+const cubicleData = [
+  //{ cubicle: 'none', status:'free'}
+];
+
+
+//app.get('/', (req, res) => {
+//  res.sendFile(__dirname + '/index.html');
+//});
 
 
 
 io.on('connection', (socket) => {
+  console.log("new connection");
+    io.emit('cubicleupdate', latestData());
+
 
   socket.on('postupdate', (msg) => {
     console.log('postupdate: ' + msg.cubicle);
@@ -22,6 +32,7 @@ io.on('connection', (socket) => {
   socket.on('getlatest', (msg) => {
     console.log('getlatest: ' + msg);
         io.emit('cubicleupdate', latestData());
+      });
 
   socket.on('addfreecubicle', (msg) => {
       console.log('addfreecubicle: ' + msg.cubicle);
@@ -29,12 +40,12 @@ io.on('connection', (socket) => {
       addFreeCubicle(msg);
         io.emit('cubicleupdate', latestData());
   });
+
 });
-});
 
 
 
-http.listen(3000, () => {
+http.listen(4000, () => {
   console.log('listening on *:3000');
 });
 

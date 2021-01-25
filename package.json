@@ -1,7 +1,7 @@
 {
-  "name": "socket-chat-example",
+  "name": "pjcovid-callin",
   "version": "0.0.1",
-  "description": "my first socket.io app",
+  "description": "calling in app",
   "dependencies": {
     "express": "^4.17.1",
     "socket-io": "^1.0.0",

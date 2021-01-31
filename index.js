@@ -4,7 +4,7 @@ const io = require('socket.io')(http, {
   cors: {
     origin: "*",
     methods: ["GET","POST","OPTIONS"],
-    credentials: false
+    credentials: true
   }
 });
 
@@ -103,7 +103,7 @@ const removeCubicles = (state) => {
     != -1) {
     //console.log("found");
 
-    let inuse = cubicleData.splice(remove-1,1);
+    let inuse = cubicleData.splice(remove,1);
     console.log(inuse);
 
     let rem_data = JSON.stringify(cubicleData);

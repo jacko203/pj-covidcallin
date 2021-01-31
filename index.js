@@ -98,9 +98,11 @@ const removeCubicles = (state) => {
   let remove = -1;
 
 
-  if(remove = cubicleData.findIndex(i => i.cubicle === state.cubicle)
+  remove = cubicleData.findIndex(i => i.cubicle === state.cubicle);
+
+  //console.log("remove:"+remove+" meaning: "+cubicleData[remove].cubicle);
     //if (item.cubicle == state.cubicle) remove = i;
-    != -1) {
+    if (remove != -1) {
     //console.log("found");
 
     let inuse = cubicleData.splice(remove,1);

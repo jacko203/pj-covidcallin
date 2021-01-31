@@ -12,9 +12,9 @@ const cubicleData = [
 ];
 
 
-//app.get('/', (req, res) => {
-//  res.sendFile(__dirname + '/index.html');
-//});
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/index.html');
+});  // for testing purposes
 
 
 
@@ -26,8 +26,12 @@ io.on('connection', (socket) => {
   socket.on('postupdate', (msg) => {
     console.log('postupdate: ' + msg.cubicle);
 
-        removeCubicles(msg);
-        io.emit('cubicleupdate', latestData());
+        try {
+          removeCubicles(msg);
+          io.emit('cubicleupdate', latestData());
+        } catch (e) {
+          io.emit('notfree',latestData());
+        }
   });
   socket.on('getlatest', (msg) => {
     console.log('getlatest: ' + msg);
@@ -37,8 +41,12 @@ io.on('connection', (socket) => {
   socket.on('addfreecubicle', (msg) => {
       console.log('addfreecubicle: ' + msg.cubicle);
 
-      addFreeCubicle(msg);
-        io.emit('cubicleupdate', latestData());
+      try {
+        let r = addFreeCubicle(msg);
+        io.emit('cubicleupdate', r);
+      } catch (e) {
+        io.emit('adderror', latestData());
+      }
   });
 
 });
@@ -52,6 +60,8 @@ http.listen(4000, () => {
 const latestData = () => {
   let latest = JSON.stringify(cubicleData);
   console.log("latest data:"+latest);
+
+
   return latest;
 
 };
@@ -59,7 +69,17 @@ const latestData = () => {
 const addFreeCubicle = (state) => {
 
   console.log("adding to array:"+state.cubicle);
+
+  if (cubicleData.some(c => c.cubicle === state.cubicle)) {
+    console.log("already in array");
+    throw new Error("already in array");
+  }
+
+  let update = {cubicle:state.cubicle.id, status: state.status};
+
   cubicleData.push(state);
+
+  console.log(JSON_stringify(cubicleData));
 
   let add = JSON.stringify(cubicleData);
   return add;
@@ -72,17 +92,27 @@ const removeCubicles = (state) => {
 
   let remove = 0;
 
-  cubicleData.forEach((item, i) => {
-    if (item.cubicle == state.cubicle) remove = i;
+  if(cubicleData.findIndex((i) => {
+    (i) => i.cubicle == state.cubicle
+    remove = i;
 
-  });
+    //if (item.cubicle == state.cubicle) remove = i;
+
+  }) != -1) {
+    console.log("found");
+
+    let inuse = cubicleData.splice(remove,1);
+    console.log(inuse);
+
+    let rem_data = JSON.stringify(cubicleData);
+    console.log(cubicleData);
+    return rem_data;
+  }
+  else {
+    console.log("not found");
+    throw new Error("Not free");
+  }
 
 
-  let inuse = cubicleData.splice(remove,1);
-  console.log(inuse);
-
-  let rem_data = JSON.stringify(cubicleData);
-  console.log(cubicleData);
-  return rem_data;
 
 };

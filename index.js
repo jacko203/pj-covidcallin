@@ -54,7 +54,7 @@ io.on('connection', (socket) => {
 
 
 http.listen(4000, () => {
-  console.log('listening on *:3000');
+  console.log('listening on *:4000');
 });
 
 const latestData = () => {
@@ -93,13 +93,13 @@ const removeCubicles = (state) => {
   let remove = 0;
 
   if(cubicleData.findIndex((i) => {
-    (i) => i.cubicle == state.cubicle
-    remove = i;
+    (i) => i.cubicle == state.cubicle;
 
     //if (item.cubicle == state.cubicle) remove = i;
 
   }) != -1) {
-    console.log("found");
+    remove = i;
+    console.log("found"+i);
 
     let inuse = cubicleData.splice(remove,1);
     console.log(inuse);

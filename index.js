@@ -90,18 +90,15 @@ const removeCubicles = (state) => {
 
   console.log("updating:"+state.cubicle);
 
-  let remove = 0;
+  let remove = -1;
 
-  if(cubicleData.findIndex((i) => {
-    (i) => i.cubicle == state.cubicle;
 
+  if(remove = cubicleData.findIndex(i => i.cubicle === state.cubicle)
     //if (item.cubicle == state.cubicle) remove = i;
+    != -1) {
+    console.log("found");
 
-  }) != -1) {
-    remove = i;
-    console.log("found"+i);
-
-    let inuse = cubicleData.splice(remove,1);
+    let inuse = cubicleData.splice(remove-1,1);
     console.log(inuse);
 
     let rem_data = JSON.stringify(cubicleData);

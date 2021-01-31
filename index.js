@@ -3,7 +3,8 @@ const http = require('http').createServer(app);
 const io = require('socket.io')(http, {
   cors: {
     origin: "*",
-    methods: ["GET","POST"]
+    methods: ["GET","POST","OPTIONS"],
+    credentials: false
   }
 });
 
@@ -19,7 +20,7 @@ app.get('/', (req, res) => {
 
 
 io.on('connection', (socket) => {
-  console.log("new connection");
+  // console.log("new connection");
     io.emit('cubicleupdate', latestData());
 
 
@@ -27,24 +28,28 @@ io.on('connection', (socket) => {
     console.log('postupdate: ' + msg.cubicle);
 
         try {
-          removeCubicles(msg);
+          let r = removeCubicles(msg);
+         //console.log("success removing cubicle:"+r);
           io.emit('cubicleupdate', latestData());
         } catch (e) {
+          console.log(e);
           io.emit('notfree',latestData());
         }
   });
   socket.on('getlatest', (msg) => {
-    console.log('getlatest: ' + msg);
+    //console.log('getlatest: ' + msg);
         io.emit('cubicleupdate', latestData());
       });
 
   socket.on('addfreecubicle', (msg) => {
-      console.log('addfreecubicle: ' + msg.cubicle);
+      //console.log('addfreecubicle: ' + msg.cubicle);
 
       try {
         let r = addFreeCubicle(msg);
+        //console.log("success adding cubicle:"+r);
         io.emit('cubicleupdate', r);
       } catch (e) {
+        console.log(e);
         io.emit('adderror', latestData());
       }
   });
@@ -59,7 +64,7 @@ http.listen(4000, () => {
 
 const latestData = () => {
   let latest = JSON.stringify(cubicleData);
-  console.log("latest data:"+latest);
+  //console.log("latest data:"+latest);
 
 
   return latest;
@@ -68,7 +73,7 @@ const latestData = () => {
 
 const addFreeCubicle = (state) => {
 
-  console.log("adding to array:"+state.cubicle);
+  //console.log("adding to array:"+state.cubicle);
 
   if (cubicleData.some(c => c.cubicle === state.cubicle)) {
     console.log("already in array");
@@ -79,7 +84,7 @@ const addFreeCubicle = (state) => {
 
   cubicleData.push(state);
 
-  console.log(JSON_stringify(cubicleData));
+  console.log(JSON.stringify(cubicleData));
 
   let add = JSON.stringify(cubicleData);
   return add;
@@ -88,7 +93,7 @@ const addFreeCubicle = (state) => {
 
 const removeCubicles = (state) => {
 
-  console.log("updating:"+state.cubicle);
+  //console.log("updating:"+state.cubicle);
 
   let remove = -1;
 
@@ -96,7 +101,7 @@ const removeCubicles = (state) => {
   if(remove = cubicleData.findIndex(i => i.cubicle === state.cubicle)
     //if (item.cubicle == state.cubicle) remove = i;
     != -1) {
-    console.log("found");
+    //console.log("found");
 
     let inuse = cubicleData.splice(remove-1,1);
     console.log(inuse);
